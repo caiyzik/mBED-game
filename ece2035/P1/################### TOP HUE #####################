@@ -1,0 +1,91 @@
+	################### TOP HUE #####################################
+		 	addi $8, $0, 312			#j < 6
+
+		 	addi $15, $0, 24
+		 	addi $12, $0, 24        #end offset = start offset + 12
+
+ArrLoop4: 	addi $15, $15, 48
+			addi $12, $12, 56
+
+InnerWhile4: add $11, $0, $15 
+			addi $13, $11, 4 		# get offset of next element 
+			addi $16, $0, 0
+
+LilLoop4: 	lw $3, Array($11) 			# R2 = Array[i]
+		 	lw $4, Array($13) 			# R3 = Array[i+1]
+		 	andi $3, $3, 0x3F
+		 	andi $4, $4, 0x3F  			
+		 	slt $6, $3, $4 				# if Array[i+1] < Array[i]
+		 	beq $6, $0, Swap4 			#then swap the values
+		 	j Next4 					#else increment the counters
+
+	Swap4:	lw $5, Array($11) 			#temp = Array[i]
+			lw $4, Array($13)			#Can I get rid of this???
+			sw $4, Array($11) 			#Array[i] = Array[i+1]
+			sw $5, Array($13)			#Array[i+1] = temp
+			addi $16, $16, 1  			#increment swap count
+		
+	Next4:  addi $11, $11, 4 			#increment current val offset
+			addi $13, $13, 4
+
+			bne $13, $12, LilLoop4 		#is i<52*length
+			bne $16, $0, InnerWhile4
+
+							#m++
+			bne $15, $8, ArrLoop4 		#is m<length
+
+
+
+
+
+
+
+
+					############### TOP HUE ###########################################
+			addi $7, $0, 1 			#j = 1
+		 	addi $8, $0, 7			#j < 7
+
+		 	addi $9, $0, 0          # m = 0
+
+			addi $10, $0, 3 		# length = 3
+		 	addi $15, $0, 72
+		 	addi $12, $15, 12        #end offset = start offset + 12
+		 	addi $16, $0, 0
+
+ArrLoop3: 	addi $9, $0, 1          #m = 1
+
+BigLoop3:  	add $11, $0, $15 
+			addi $13, $11, 4 		# get offset of next element 
+			addi $16, $0, 0
+
+LilLoop3: 	lw $3, Array($11) 			# R2 = Array[i]
+		 	lw $4, Array($13) 			# R3 = Array[i+1]
+		 	andi $3, $3, 0x3F
+		 	andi $4, $4, 0x3F   			# if Array[i+1] < Array[i]
+		 	slt $6, $3, $4 
+		 	beq $6, $0, Swap3 			#then swap the values
+		 	j Next3 					#else increment the counters
+
+
+	Swap3:	lw $5, Array($11) 			#temp = Array[i]
+			lw $4, Array($13)
+			sw $4, Array($11) 			#Array[i] = Array[i+1]
+			sw $5, Array($13)			#Array[i+1] = temp
+			addi $16, $16, 1  			#increment swap count
+		
+	Next3:  addi $11, $11, 4 			#increment current val offset by 53 to go down the column
+			addi $13, $13, 4
+
+			bne $13, $12, LilLoop3 		#is i<52*length
+			beq $16, $0, NextCol3
+
+			addi $9, $9, 1 				#m++
+			bne $9, $10, BigLoop3 		#is m<length
+
+NextCol3:	addi $10, $10, 2 			#length = length + 2
+			#update the start address
+			addi $15, $15, 48
+			addi $12, $12, 56
+
+			addi $7, $7, 1       	 #j++ 
+			bne $7, $8, ArrLoop3 
